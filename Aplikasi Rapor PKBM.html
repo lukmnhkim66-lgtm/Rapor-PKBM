@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Aplikasi Rapor PKBM</title>
+<style>
+:root{--bg:#f6f5f1;--fg:#1c1b19;--card:#fff;--bd:#d8d5cc;--ac:#1d5c4a;--mu:#6b685f;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#161614;--fg:#eeece6;--card:#201f1c;--bd:#3a3833;--ac:#5fb89d;--mu:#a09d93}}
+:root[data-theme="dark"]{--bg:#161614;--fg:#eeece6;--card:#201f1c;--bd:#3a3833;--ac:#5fb89d;--mu:#a09d93}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+header{padding:14px 18px;border-bottom:1px solid var(--bd)}h1{margin:0;font-size:18px}header small{color:var(--mu)}
+nav{display:flex;gap:6px;padding:10px 18px;flex-wrap:wrap}nav button{border:1px solid var(--bd);background:var(--card);color:var(--fg);padding:7px 14px;border-radius:8px;cursor:pointer;font:inherit}
+nav button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+main{padding:6px 18px 40px;max-width:980px;margin:auto}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:16px;margin-bottom:14px}
+.bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}.bar label,.f label{display:flex;flex-direction:column;font-size:12px;color:var(--mu);gap:3px}
+input,select,textarea{font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--bd);border-radius:7px;padding:7px 9px;width:100%}
+.f{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.btn{background:var(--ac);color:#fff;border:0;padding:8px 14px;border-radius:8px;cursor:pointer;font:inherit}.btn.g{background:transparent;color:var(--fg);border:1px solid var(--bd)}
+.row{display:grid;grid-template-columns:1fr 90px;gap:8px;margin-bottom:10px}.row b{grid-column:1/-1;font-weight:600}.row textarea{grid-column:1/-1;min-height:54px}
+h3{margin:14px 0 8px;font-size:14px;color:var(--ac)}.mu{color:var(--mu);font-size:13px}
+.li{display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid var(--bd);cursor:pointer}.li.on{color:var(--ac);font-weight:600}
+.pg{background:#fff;color:#000;width:100%;max-width:794px;margin:0 auto 16px;padding:32px 40px;font:13px/1.45 "Times New Roman",serif;border:1px solid #ccc;overflow-x:auto}
+.pg h2{text-align:center;margin:6px 0;font-size:16px}.t{width:100%;border-collapse:collapse}.t td,.t th{border:1px solid #000;padding:4px 6px;vertical-align:top}.t th{background:#eee}
+.k td{padding:2px 4px;vertical-align:top}.c{text-align:center}.sg{display:flex;justify-content:space-between;margin-top:22px;text-align:center}.sg div{width:32%;min-height:100px}
+@media print{body *{visibility:hidden}#pr,#pr *{visibility:visible}#pr{position:absolute;left:0;top:0;width:100%}.pg{border:0;margin:0;max-width:none;padding:0;page-break-after:always}@page{size:A4;margin:14mm}}
+</style></head><body>
+<header><h1>Aplikasi Rapor PKBM</h1><small>Paket A (Fase A, B, C) · Paket B · Paket C — data tersimpan di browser ini</small></header>
+<nav id="nav"></nav><main id="app"></main>
+<script>
+const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let S={sat:{},sis:{},nil:{}},ui={tab:'sat',sid:null,kls:null,sem:'1',ta:'2025/2026',pr:'all'},warned=false;
+try{const x=localStorage.getItem('rapor-pkbm');if(x)S=JSON.parse(x)}catch(e){}
+const save=()=>{try{localStorage.setItem('rapor-pkbm',JSON.stringify(S))}catch(e){if(!warned){warned=true;alert('Penyimpanan browser gagal/penuh. Gunakan tab Data untuk menyalin cadangan.')}}};
+const set=(p,v)=>{const a=p.split('.');let o=S;for(let i=0;i<a.length-1;i++)o=o[a[i]]??=({});o[a.at(-1)]=v};
+const get=(o,p)=>p.split('.').reduce((x,k)=>x?.[k],o);
+const U=['Pendidikan Agama Islam dan Budi Pekerti','Pendidikan Pancasila','Bahasa Indonesia','Matematika'],PJ='Pendidikan Jasmani Olahraga dan Kesehatan',SB='Seni dan Budaya',EN='Bahasa Inggris',IPAS='Ilmu Pengetahuan Alam dan Sosial';
+const PR={
+A1:{n:'Paket A – Fase A (Kelas I–II)',j:'PAKET A SETARA SD',k:['I','II'],f:()=>'A',m:()=>[...U,PJ,SB],p:()=>0},
+A2:{n:'Paket A – Fase B (Kelas III–IV)',j:'PAKET A SETARA SD',k:['III','IV'],f:()=>'B',m:()=>[...U,PJ,SB,IPAS,EN],p:()=>0},
+A3:{n:'Paket A – Fase C (Kelas V–VI)',j:'PAKET A SETARA SD',k:['V','VI'],f:()=>'C',m:()=>[...U,PJ,SB,IPAS,EN],p:()=>0},
+B:{n:'Paket B (Kelas VII–IX)',j:'PAKET B SETARA SMP',k:['VII','VIII','IX'],f:()=>'D',m:()=>[...U,'Ilmu Pengetahuan Alam','Ilmu Pengetahuan Sosial',EN,PJ,SB],p:()=>0},
+C:{n:'Paket C (Kelas X–XII)',j:'PAKET C SETARA SMA',k:['X','XI','XII'],f:k=>k=='X'?'E':'F',p:k=>k=='X'?0:4,
+ m:k=>k=='X'?[...U,EN,'Ilmu Pengetahuan Alam (Fisika, Kimia, dan Biologi)','Ilmu Pengetahuan Sosial (Sejarah, Ekonomi, Geografi, dan Sosiologi)',PJ,SB]:[...U,EN,'Sejarah',PJ,'Seni']}};
+const SF=[['nama','Nama Satuan Pendidikan'],['npsn','NPSN'],['alamat','Alamat'],['pos','Kode Pos'],['web','Website'],['email','Email'],['telp','Telepon'],['kepsek','Nama Kepala SKB/PKBM'],['nip','NIP/NIY Kepala'],['kota','Kota (untuk tanggal rapor)']];
+const PF=[['nama','Nama Peserta Didik'],['nisn','NISN/NIS'],['ttl','Tempat, Tanggal Lahir'],['jk','Jenis Kelamin'],['agama','Agama'],['anak','Anak ke'],['telp','Telepon'],['hp','Nomor HP'],['alamat','Alamat Peserta Didik'],['kelasMasuk','Diterima di Kelas'],['tglMasuk','Tanggal diterima'],['status','Sebagai (baru/pindahan)'],['ayah','Nama Ayah'],['ibu','Nama Ibu'],['kAyah','Pekerjaan Ayah'],['kIbu','Pekerjaan Ibu'],['wali','Nama Wali'],['kWali','Pekerjaan Wali']];
+const inp=(p,v,x='')=>`<input data-p="${p}" value="${esc(v)}" ${x}>`;
+const sis=()=>S.sis[ui.sid],prog=()=>PR[sis()?.pr],kls=()=>ui.kls&&prog()?.k.includes(ui.kls)?ui.kls:prog()?.k[0];
+const key=()=>`${ui.sid}_${kls()}_${ui.sem}_${ui.ta.replace(/\W/g,'-')}`;
+const rec=()=>(S.nil[key()]??={});
+function pick(){const ss=Object.values(S.sis);return `<div class="bar"><label>Peserta didik<select data-u="sid"><option value="">— pilih —</option>${ss.map(s=>`<option value="${s.id}" ${s.id==ui.sid?'selected':''}>${esc(s.nama||'(tanpa nama)')}</option>`).join('')}</select></label>`+
+(prog()?`<label>Kelas<select data-u="kls">${prog().k.map(k=>`<option ${k==kls()?'selected':''}>${k}</option>`).join('')}</select></label><label>Semester<select data-u="sem"><option ${ui.sem=='1'?'selected':''}>1</option><option ${ui.sem=='2'?'selected':''}>2</option></select></label><label>Tahun Pelajaran<input data-u="ta" value="${esc(ui.ta)}"></label>`:'')+'</div>'}
+const rows=()=>{const p=prog(),k=kls(),L=[];p.m(k).forEach((n,i)=>L.push(['u'+i,n,1]));return L};
+function vSat(){return `<div class="card"><h3>Identitas Satuan Pendidikan</h3><div class="f">${SF.map(([k,l])=>`<label>${l}${inp('sat.'+k,S.sat[k])}</label>`).join('')}<label>Logo SKB/PKBM<input type="file" accept="image/*" id="logo"></label></div><p class="mu">Data ini dipakai di sampul, identitas sekolah, header nilai, dan tanda tangan semua rapor.</p></div>`}
+function vSis(){const ss=Object.values(S.sis),s=sis();return `<div class="card"><button class="btn" id="add">+ Tambah peserta didik</button><div style="margin-top:8px">${ss.map(x=>`<div class="li ${x.id==ui.sid?'on':''}" data-sel="${x.id}"><span>${esc(x.nama||'(tanpa nama)')}</span><span class="mu">${PR[x.pr]?.n||''}</span></div>`).join('')||'<p class="mu">Belum ada peserta didik.</p>'}</div></div>`+
+(s?`<div class="card"><h3>Keterangan Diri Peserta Didik</h3><div class="f"><label>Program<select data-p="sis.${s.id}.pr" data-r>${Object.entries(PR).map(([k,v])=>`<option value="${k}" ${s.pr==k?'selected':''}>${v.n}</option>`).join('')}</select></label>${PF.map(([k,l])=>`<label>${l}${inp(`sis.${s.id}.${k}`,s[k])}</label>`).join('')}</div><p><button class="btn g" id="del">Hapus peserta didik ini</button></p></div>`:'')}
+function vNil(){if(!prog())return pick()+'<p class="mu">Pilih peserta didik terlebih dahulu (tambahkan di tab Peserta Didik).</p>';const R=rec(),b=`nil.${key()}`,p=prog(),k=kls();
+const row=(id,l,x='')=>`<div class="row"><b>${esc(l)}</b>${x||''}<input data-p="${b}.m.${id}.n" value="${esc(R.m?.[id]?.n)}" placeholder="Nilai" inputmode="numeric"><textarea data-p="${b}.m.${id}.c" placeholder="Capaian kompetensi">${esc(R.m?.[id]?.c)}</textarea></div>`;
+let h=pick()+`<div class="card"><h3>Kelompok Mata Pelajaran Umum</h3>${p.m(k).map((n,i)=>row('u'+i,n)).join('')}`;
+if(p.p(k)){h+=`<h3>Kelompok Mata Pelajaran Pilihan</h3>`+[0,1,2,3].map(i=>row('p'+i,'Pilihan '+(i+1),`<input data-p="${b}.pl.${i}" value="${esc(R.pl?.[i])}" placeholder="Nama mapel pilihan">`).replace('<div class="row"><b>Pilihan '+(i+1)+'</b>','<div class="row">')).join('')}
+h+=`<h3>Ko-Kurikuler Muatan Pemberdayaan dan Keterampilan</h3>${row('pb','Pemberdayaan')}${row('kt','Keterampilan')}${row('ml','Muatan Lokal')}</div>
+<div class="card"><h3>Ekstrakurikuler</h3>${[0,1].map(i=>`<div class="f" style="margin-bottom:8px"><label>Kegiatan ${i+1}${inp(`${b}.ek.${i}.n`,R.ek?.[i]?.n)}</label><label>Predikat${inp(`${b}.ek.${i}.p`,R.ek?.[i]?.p)}</label><label>Keterangan${inp(`${b}.ek.${i}.k`,R.ek?.[i]?.k)}</label></div>`).join('')}
+<h3>Ketidakhadiran</h3><div class="f"><label>Izin (hari)${inp(b+'.izin',R.izin)}</label><label>Sakit (hari)${inp(b+'.sakit',R.sakit)}</label><label>Alpa (hari)${inp(b+'.alpa',R.alpa)}</label></div>
+<h3>Catatan &amp; Tanda Tangan</h3><div class="f"><label>Catatan Wali Kelas<textarea data-p="${b}.cat">${esc(R.cat)}</textarea></label><label>Tanggapan Orang Tua/Wali<textarea data-p="${b}.tang">${esc(R.tang)}</textarea></label><label>Tanggal rapor (mis. 20 Desember 2025)${inp(b+'.tgl',R.tgl)}</label><label>Nama Wali Kelas${inp(b+'.wk',R.wk)}</label><label>Nama Orang Tua/Wali${inp(b+'.ortu',R.ortu)}</label></div></div>`;return h}
+const dots=v=>v?esc(v):'………………………………';
+function pCover(s,p){const t=S.sat;return `<div class="pg c" style="min-height:900px"><div style="height:110px;margin-top:10px">${t.logo?`<img src="${t.logo}" style="max-height:110px">`:'LOGO SKB/PKBM'}</div><h2 style="margin-top:50px">LAPORAN HASIL BELAJAR<br>PESERTA DIDIK</h2><h2>PROGRAM ${p.j}</h2><p style="margin-top:70px">NAMA PESERTA DIDIK</p><div style="border:1px solid #000;padding:8px;font-weight:bold;max-width:360px;margin:auto">${esc(s.nama)}</div><p>NISN/NIS</p><div style="border:1px solid #000;padding:8px;font-weight:bold;max-width:360px;margin:auto">${esc(s.nisn)}</div>
+<div style="margin-top:110px"><b>${esc((t.nama||'NAMA SATUAN PENDIDIKAN').toUpperCase())}</b><br>NPSN ${esc(t.npsn)}<br>Alamat: ${dots(t.alamat)}<br>Telepon ${esc(t.telp)} Kode Pos ${esc(t.pos)}<br>email ${esc(t.email)}</div></div>`}
+function pSat(){const t=S.sat;return `<div class="pg"><h2>IDENTITAS SEKOLAH</h2><br><table class="k">${[['Nama Satuan Pendidikan','nama'],['NPSN','npsn'],['Alamat','alamat'],['Kode Pos','pos'],['Website','web'],['Email','email'],['Telepon','telp']].map(([l,k])=>`<tr><td width="200">${l}</td><td>: ${esc(t[k])}</td></tr>`).join('')}</table></div>`}
+function pSis(s){const t=S.sat,L=[['Nama Peserta Didik',s.nama],['NISN/NIS',s.nisn],['Tempat, Tanggal Lahir',s.ttl],['Jenis Kelamin',s.jk],['Agama',s.agama],['Anak ke',s.anak],['Telepon',s.telp],['Alamat Peserta Didik',s.alamat],['Nomor HP',s.hp],['Diterima di sekolah ini'],['   di Kelas',s.kelasMasuk],['   pada tanggal',s.tglMasuk],['   sebagai',s.status],['Nama Orang Tua'],['   a. Ayah',s.ayah],['   b. Ibu',s.ibu],['Pekerjaan Orang Tua'],['   a. Ayah',s.kAyah],['   b. Ibu',s.kIbu],['Nama Wali Peserta Didik',s.wali],['Pekerjaan Wali Peserta Didik',s.kWali]];let n=0;
+return `<div class="pg"><h2>KETERANGAN DIRI TENTANG PESERTA DIDIK</h2><br><table class="k">${L.map(([l,v])=>{const h=!l.startsWith(' ');if(h)n++;return `<tr><td width="28">${h?n+'.':''}</td><td width="230">${esc(l.trim())}${h?'':''}</td><td>${v===undefined?'':': '+esc(v)}</td></tr>`}).join('')}</table>
+<div class="sg" style="justify-content:flex-end"><div style="width:45%">${esc(t.kota||'')}${t.kota&&s.tglMasuk?', ':''}${esc(s.tglMasuk)}<br>Kepala SKB/PKBM,<br><br><br><br><b>${dots(t.kepsek)}</b><br>NIP ${esc(t.nip)}</div></div></div>`}
+function pIsi(s,p){const R=rec(),k=kls(),t=S.sat;let n=0;const tr=(l,id,nm)=>`<tr><td class="c">${++n}</td><td>${esc(nm??l)}</td><td class="c">${esc(R.m?.[id]?.n)}</td><td>${esc(R.m?.[id]?.c).replace(/\n/g,'<br>')}</td></tr>`,g=l=>`<tr><td colspan="4"><b>${l}</b></td></tr>`;
+const ek=[0,1].map(i=>`<tr><td class="c">${i+1}</td><td>${esc(R.ek?.[i]?.n)}</td><td>${esc(R.ek?.[i]?.p)}</td><td>${esc(R.ek?.[i]?.k)}</td></tr>`).join('');
+const tg=(t.kota?t.kota+', ':'')+(R.tgl||'…………………');
+return `<div class="pg"><table class="k" style="width:100%"><tr><td width="150">Nama Satuan Pendidikan</td><td>: ${esc(t.nama)}</td><td width="110">Kelas</td><td>: ${k}</td></tr><tr><td>Alamat</td><td>: ${esc(t.alamat)}</td><td>Semester</td><td>: ${ui.sem}</td></tr><tr><td>Nama Peserta Didik</td><td>: ${esc(s.nama)}</td><td>Fase</td><td>: ${p.f(k)}</td></tr><tr><td>Nomor Induk/NISN</td><td>: ${esc(s.nisn)}</td><td>Tahun Pelajaran</td><td>: ${esc(ui.ta)}</td></tr></table>
+<p><b>A. Lembar Isi Mata Pelajaran</b></p><table class="t"><tr><th width="30">No</th><th>Mata Pelajaran/Muatan Pemberdayaan dan Keterampilan</th><th width="60">Nilai Akhir</th><th width="40%">Capaian Kompetensi</th></tr>${g('Kelompok Mata Pelajaran Umum')}${p.m(k).map((m,i)=>tr(m,'u'+i)).join('')}${p.p(k)?g('Kelompok Mata Pelajaran Pilihan')+[0,1,2,3].map(i=>tr('','p'+i,R.pl?.[i]||'')).join(''):''}${g('Ko-Kurikuler Muatan Pemberdayaan dan Keterampilan')}${tr('Pemberdayaan','pb')}${tr('Keterampilan','kt')}${tr('Muatan Lokal','ml')}</table>
+<br><table class="t"><tr><th width="30">No</th><th>Kegiatan Ekstrakurikuler</th><th width="90">Predikat</th><th>Keterangan</th></tr>${ek}</table><br>
+<table class="t"><tr><td width="45%"><b>Ketidakhadiran</b><br>1. Izin : ${esc(R.izin)} hari<br>2. Sakit : ${esc(R.sakit)} hari<br>3. Alpa : ${esc(R.alpa)} hari</td><td><b>Catatan Wali Kelas</b><br>${esc(R.cat)}</td></tr><tr><td colspan="2"><b>Tanggapan Orang Tua/Wali Murid</b><br>${esc(R.tang)}<br></td></tr></table>
+<div style="text-align:right;margin-top:14px">${esc(tg)}</div><div class="sg" style="margin-top:6px"><div>Orang Tua/Wali<br><br><br><br><b>${dots(R.ortu||s.wali||s.ayah)}</b></div><div>Kepala SKB/PKBM<br><br><br><br><b>${dots(t.kepsek)}</b><br>NIP ${esc(t.nip)}</div><div>Wali Kelas,<br><br><br><br><b>${dots(R.wk)}</b></div></div></div>`}
+function vCetak(){if(!prog())return pick()+'<p class="mu">Pilih peserta didik terlebih dahulu.</p>';const s=sis(),p=prog(),w=ui.pr;
+const o=[w=='all'||w=='cover'?pCover(s,p):'',w=='all'||w=='id'?pSat()+pSis(s):'',w=='all'||w=='isi'?pIsi(s,p):''].join('');
+return pick()+`<div class="bar"><label>Bagian yang dicetak<select data-u="pr"><option value="all" ${w=='all'?'selected':''}>Semua (sampul, identitas, isi)</option><option value="cover" ${w=='cover'?'selected':''}>Sampul saja</option><option value="id" ${w=='id'?'selected':''}>Identitas saja</option><option value="isi" ${w=='isi'?'selected':''}>Isi nilai saja</option></select></label><button class="btn" onclick="window.print()" style="align-self:end">Cetak / Simpan PDF</button></div><div id="pr">${o}</div>`}
+function vData(){return `<div class="card"><h3>Cadangan data</h3><p class="mu">Data hanya tersimpan di browser ini. Salin teks di bawah dan simpan di file catatan sebagai cadangan, atau tempel cadangan lama untuk memulihkan.</p><textarea id="bk" style="min-height:160px"></textarea><p><button class="btn" id="exp">Tampilkan cadangan</button> <button class="btn g" id="imp">Pulihkan dari teks</button></p></div>`}
+const T={sat:['Satuan Pendidikan',vSat],sis:['Peserta Didik',vSis],nil:['Input Nilai',vNil],cetak:['Cetak Rapor',vCetak],data:['Data',vData]};
+function r(){$('#nav').innerHTML=Object.entries(T).map(([k,v])=>`<button data-t="${k}" class="${k==ui.tab?'on':''}">${v[0]}</button>`).join('');$('#app').innerHTML=T[ui.tab][1]();bind()}
+function bind(){const l=$('#logo');if(l)l.onchange=e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{const im=new Image();im.onload=()=>{const c=document.createElement('canvas'),k=Math.min(1,200/im.height);c.width=im.width*k;c.height=im.height*k;c.getContext('2d').drawImage(im,0,0,c.width,c.height);S.sat.logo=c.toDataURL('image/png');save();alert('Logo tersimpan.')};im.src=rd.result};rd.readAsDataURL(f)};
+const a=$('#add');if(a)a.onclick=()=>{const id='s'+Date.now();S.sis[id]={id,pr:'B'};ui.sid=id;save();r()};
+const d=$('#del');if(d)d.onclick=()=>{if(confirm('Hapus peserta didik ini beserta nilainya?')){delete S.sis[ui.sid];ui.sid=null;save();r()}};
+document.querySelectorAll('[data-sel]').forEach(e=>e.onclick=()=>{ui.sid=e.dataset.sel;ui.kls=null;r()});
+const x=$('#exp');if(x)x.onclick=()=>{$('#bk').value=JSON.stringify(S)};
+const im=$('#imp');if(im)im.onclick=()=>{try{const v=JSON.parse($('#bk').value);if(v.sis&&confirm('Timpa semua data sekarang dengan cadangan ini?')){S=v;save();alert('Data dipulihkan.');r()}}catch(e){alert('Teks cadangan tidak valid.')}}}
+document.addEventListener('input',e=>{const t=e.target;if(t.dataset.p){set(t.dataset.p,t.value);save()}});
+document.addEventListener('change',e=>{const t=e.target;if(t.dataset.u){ui[t.dataset.u]=t.value;if(t.dataset.u=='sid')ui.kls=null;r()}else if(t.dataset.r!==undefined){ui.kls=null;r()}});
+document.addEventListener('click',e=>{const b=e.target.closest('[data-t]');if(b){ui.tab=b.dataset.t;r()}});
+r();
+</script></body></html>
